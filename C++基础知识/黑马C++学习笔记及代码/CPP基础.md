@@ -733,7 +733,7 @@ public:
 
     ```cpp
     Player p("zhou"); //定义一个派生类对象p
-    Entity *e = &p; //定义一个基类指针e指向对象p
+    Entity* e = &p; //定义一个基类指针e指向对象p
     cout << e->GetName() << endl; //访问虚函数（实际输出是派生类中的虚函数）
     ```
 
@@ -742,7 +742,7 @@ public:
    一个类中如果有虚函数，则默认的析构函数也是虚函数，例如：
 
     ```cpp
-    Entity *e = new Player();
+    Entity* e = new Player();
     delete e;
     ```
 
