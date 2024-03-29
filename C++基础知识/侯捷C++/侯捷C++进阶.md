@@ -314,7 +314,29 @@ imag(a) //错误，不知道调用哪个
 
 * 虚函数表在**编译时生成**，存在代码段，虚函数表指针在**构造函数初始化列表**时生成
 * 指向派生类对象的基类指针无法访问派生类的非虚成员函数，使用虚函数就实现了一个接口多种方法
-
 * 多继承下，会有多个虚函数表，派生类新增的虚函数默认放在最左侧的虚函数表中
-
 * 派生类没有重写虚函数，则使用最新的虚函数版本（派生链的上一个类）
+
+![image-20240327110903701](C:\Users\18143\AppData\Roaming\Typora\typora-user-images\image-20240327110903701.png)
+
+### 动态绑定
+
+## const
+
+* const关键字应该是写类的时候就确定这个方法要不要加，而不是事后加上的，比如打印函数print，从逻辑上来讲，打印不会改变数据成员，那他应该就是const函数
+
+* 限定成员函数，不能是全局函数
+
+* 函数可以将const作为签名，以进行函数重载
+
+* **const对象只能调用const函数，非const对象可以调用const和非const函数，**但是**当成员函数const和non-const版本同时存在**时，const对象只能调用const版本，非const对象只能调用非const版本
+
+## operator new、operator delete、operator new[]、operator delete[]重载
+
+上面的四个函数是可以进行重载的，
+
+![image-20240327170822295](C:\Users\18143\AppData\Roaming\Typora\typora-user-images\image-20240327170822295.png)
+
+![image-20240327170942637](C:\Users\18143\AppData\Roaming\Typora\typora-user-images\image-20240327170942637.png)
+
+p指向的堆内存，首先有一个counter计数器，存储这个数组有5个Foo的对象，然后是5个foo对象

@@ -181,3 +181,60 @@ void ChooseSort1(int *arr, int n)
 }
 ```
 
+## 堆排序
+
+1. 将待排序数组转化为一个堆，堆顶元素就是最大
+2. 将堆顶元素与最后一个元素交换，并维护除最后一个元素之前的堆
+3. 最后得到的数组就是从小到大排序的数组
+
+```cpp
+#include<iostream>
+using namespace std;
+
+void maxHeapfiy(int* arr, int start, int end) //维护堆
+{
+	int dad = start;
+	int son = dad * 2 + 1;
+	while (son <= end)
+	{
+		if (son + 1 <= end && arr[son + 1] > arr[son]) 
+		{
+			son++;
+		}
+		if(arr[dad] > arr[son])
+		{
+			return;
+		}
+		else
+		{
+			swap(arr[dad], arr[son]);
+			dad = son;
+			son = dad * 2 + 1;
+		}
+	}
+}
+
+void heapSort(int* arr, int len)
+{
+	for (int i = len / 2 - 1; i >= 0; i--) //将数组构造为一个最大堆
+	{
+		maxHeapfiy(arr, i, len - 1);
+	}
+	for (int i = len - 1; i >0; i--) //调整首尾元素，并维护最大堆
+	{
+		swap(arr[0], arr[i]);
+		maxHeapfiy(arr, 0, i - 1);
+	}
+}
+
+int main()
+{
+	int arr[] = { 2,5,6,9,10,35,65,95,20,10 };
+	heapSort(arr, 10);
+	for (int i = 0; i < 10; i++)
+	{
+		cout << arr[i] << " ";
+	}
+}
+```
+
