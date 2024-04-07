@@ -339,4 +339,103 @@ imag(a) //错误，不知道调用哪个
 
 ![image-20240327170942637](C:\Users\18143\AppData\Roaming\Typora\typora-user-images\image-20240327170942637.png)
 
-p指向的堆内存，首先有一个counter计数器，存储这个数组有5个Foo的对象，然后是5个foo对象
+p指向的堆内存，首先有一个counter计数器，存储这个数组有Foo的对象的个数，然后是5个foo对象
+
+
+
+# C++标准库（体系结构与内核分析）
+
+C++标准库大于stl
+
+* C++标准库的头文件不带.h 例如#include<vector>
+* 新式C头文件不带.h 例如#include<csdio>
+* 旧式C头文件带.h 例如 #include<stdio.h>
+* 新式的组件均在命名空间std中，旧式没有
+
+## stl体系结构
+
+stl六大部件：容器，分配器，算法，迭代器，适配器，仿函数
+
+![image-20240330112059269](C:\Users\18143\AppData\Roaming\Typora\typora-user-images\image-20240330112059269.png)
+
+## 容器分类
+
+* 关联式容器：set/Multiset、map/Multimap。红黑树实现。multi：元素内容可以重复
+
+![image-20240330171947202](C:\Users\18143\AppData\Roaming\Typora\typora-user-images\image-20240330171947202.png)
+
+* 序列式容器：array（连续数组，定长）、vector、deque、list
+
+![image-20240330145518124](C:\Users\18143\AppData\Roaming\Typora\typora-user-images\image-20240330145518124.png)
+
+Undered Containers：unordered set、unordered map 
+
+<img src="C:\Users\18143\AppData\Roaming\Typora\typora-user-images\image-20240330172030050.png" alt="image-20240330172030050" style="zoom:50%;" />散列表独立链接
+
+## 容器测试
+
+* array：长度固定的数组，达到尾部无法再添加元素
+
+* vector：长度未定，可以一直push_back，但是如果频繁的push_back，会导致稳定性下降，因为存放vector的内存可以已经存不下下一个push_back的元素，这时候就会复制整个数组到另一块内存中。vector扩展内存是两倍增长的；本身没有find函数
+
+  ```cpp
+  vec.capacity(); //真正所占内存，vector的内存两倍增长
+  ```
+
+* list：双向链表（有自己的sort函数）
+
+* slist：单向链表 forward_list
+
+* deque：双端队列，分段连续（buffer），要用到指针
+
+* stack：不管是stack还是queue，都是从deque继承来的，底层实现都是deque，这些是没有iterator迭代器的，否则就会破坏这些结构的特性（先进先出、先进后出）
+
+  <img src="C:\Users\18143\AppData\Roaming\Typora\typora-user-images\image-20240407105540215.png" alt="image-20240407105540215" style="zoom:50%;" />
+
+* multiset：底层实现红黑树；本身就有find函数；重复的元素也可以放进去；不能用[]进行索引
+
+* multimap：底层实现红黑树；不能用[]进行索引，可能有重复的key；
+
+* unordered_multiset：底层实现hash表；不能用[]进行索引
+
+* unordered_multimap：底层实现hash表；不能用[]进行索引
+
+关联式容器：查找很快
+
+* set：没有重复的元素
+* map：key是不会重复的，可以用[]进行索引
+* unordered_set：
+* 
+
+## 一些算法
+
+* find函数：find(vec.begin(),vec.end(),target);（vector，array，list等序列性容器，只能调用全局的find函数）；set，map，multimap等关联式容器是用自己本身的find()，很快。
+* sort();
+
+## 分配器(allocator)
+
+实际上就是分配内存，都要调用malloc()函数，实际上根据操作系统的不同，拿到不同的内存
+
+不建议使用，**配器进行空间释放时，会要求程序员确定需要释放多少内存**。
+
+## 源代码的分布（VC，GCC）
+
+OOP：面向对象编程，data和method放在一起
+
+GP：泛型编程，将data和method分开，
+
+标准库的sort函数需要一定的条件，比如需要连续的迭代器，这是list链表数据结构所没有的
+
+### 模版
+
+* 函数模版，编译器可以进行实参推导
+* 类模板，必须指定的模版T是什么，没有线索可以确定使用的是哪一个
+
+1. 模板特化：
+
+   ![image-20240407151210222](C:\Users\18143\AppData\Roaming\Typora\typora-user-images\image-20240407151210222.png)
+
+2. 模版偏特化：指定其中某个模版
+
+   ![image-20240407151953067](C:\Users\18143\AppData\Roaming\Typora\typora-user-images\image-20240407151953067.png)
+
